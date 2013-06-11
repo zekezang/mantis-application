@@ -1,0 +1,49 @@
+
+expat:
+./configure --prefix=/sourcecode/arm-workspace/dbus-test/out --host=arm-linux --target=arm-linux CC="/usr/local/arm/4.3.2/bin/arm-linux-gcc"
+
+
+dbus:
+./configure --prefix=/sourcecode/arm-workspace/dbus-test/out --host=arm-linux --target=arm-linux --with-x=no \
+CC="/usr/local/arm/4.3.2/bin/arm-linux-gcc -I/sourcecode/arm-workspace/dbus-test/out/include -L/sourcecode/arm-workspace/dbus-test/out/lib"
+
+glib:
+echo ac_cv_type_long_long=yes>arm-linux.cache; \
+echo glib_cv_stack_grows=no>>arm-linux.cache ; \
+echo glib_cv_uscore=no>>arm-linux.cache ; \
+echo c_cv_func_posix_getpwuid_r=yes>>arm-linux.cache ; \
+echo ac_cv_func_posix_getpwuid_r=yes>>arm-linux.cache ; \
+echo ac_cv_func_posix_getgrgid_r=yes>>arm-linux.cache ; \
+echo ac_cv_have_abstract_sockets=yes>>arm-linux.cache
+
+./configure --prefix=/sourcecode/arm-workspace/dbus-test/out --host=arm-linux --target=arm-linux \
+CC="arm-linux-gcc -I/sourcecode/arm-workspace/dbus-test/out/include -L/sourcecode/arm-workspace/dbus-test/out/lib" \
+--cache-file=arm-linux.cache
+
+
+
+
+
+
+服务器build 命令  [arm-linux-gcc 路径不同]
+
+
+./configure --prefix=/sourcecode/arm-workspace/dbus-test/out --host=arm-linux --target=arm-linux CC="/home/build/arm/4.3.2/bin/arm-linux-gcc"
+
+
+
+./configure --prefix=/sourcecode/arm-workspace/dbus-test/out --host=arm-linux --target=arm-linux --with-x=no \
+CC="/home/build/arm/4.3.2/bin/arm-linux-gcc -I/sourcecode/arm-workspace/dbus-test/out/include -L/sourcecode/arm-workspace/dbus-test/out/lib"
+
+
+echo ac_cv_type_long_long=yes>arm-linux.cache; \
+echo glib_cv_stack_grows=no>>arm-linux.cache ; \
+echo glib_cv_uscore=no>>arm-linux.cache ; \
+echo c_cv_func_posix_getpwuid_r=yes>>arm-linux.cache ; \
+echo ac_cv_func_posix_getpwuid_r=yes>>arm-linux.cache ; \
+echo ac_cv_func_posix_getgrgid_r=yes>>arm-linux.cache ; \
+echo ac_cv_have_abstract_sockets=yes>>arm-linux.cache
+
+./configure --prefix=/sourcecode/arm-workspace/dbus-test/out --host=arm-linux --target=arm-linux \
+CC="/home/build/arm/4.3.2/bin/arm-linux-gcc -I/sourcecode/arm-workspace/dbus-test/out/include -L/sourcecode/arm-workspace/dbus-test/out/lib" \
+--cache-file=arm-linux.cache

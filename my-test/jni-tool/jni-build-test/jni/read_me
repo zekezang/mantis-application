@@ -1,0 +1,30 @@
+LOCAL_LDFLAGS LOCAL_CFLAGS区别，，第一个是在链接时的flags，一般用作"-L"，，第二个是编译时的flags，，，一般用作"-I" "-D"
+LOCAL_LDLIBS  --> "-l"
+
+V=1显示编译时详细命令
+
+
+//
+//我没有你的代码，，这个例子给你吧，，看看有没有帮助
+
+//android-8对应Application.mk
+/**-----------------先生成shared so----------- copy到android-ndk-r7/platforms/android-8/arch-arm/usr/lib下-----------**/
+LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
+LOCAL_MODULE    := a
+LOCAL_SRC_FILES := a.c
+LOCAL_SHARED_LIBRARIES := liblog
+LOCAL_PRELINK_MODULE := false
+include $(BUILD_SHARED_LIBRARY)
+
+
+/**-----------------ok，，再执行这个----------------------**/
+LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
+LOCAL_MODULE    := b
+LOCAL_SRC_FILES := test.c
+LOCAL_PRELINK_MODULE := true
+LOCAL_LDFLAGS := -L/sourcecode/arm-workspace/my-test/arm-package/jni/
+LOCAL_LDLIBS += -la
+
+include $(BUILD_EXECUTABLE)

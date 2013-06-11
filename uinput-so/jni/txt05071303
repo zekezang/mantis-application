@@ -1,0 +1,169 @@
+/*
+ * main.c
+ *
+ *  Created on: 2013-5-6
+ *      Author: zekezang
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include "input.h"
+#include "uinput.h"
+
+/* Setup the uinput device */
+int setup_uinput_device(int fd) {
+	struct uinput_user_dev uidev; // uInput device structure
+	int i = 0;
+
+	memset(&uidev, 0, sizeof(struct uinput_user_dev)); // Intialize the uInput device to NULL
+	snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "zekezang_keyboard");
+	uidev.id.bustype = BUS_VIRTUAL;
+	uidev.id.vendor = 0x1111;
+	uidev.id.product = 0x1111;
+	uidev.id.version = 1;
+	// Setup the driver I/O channels
+	ioctl(fd, UI_SET_EVBIT, EV_KEY);
+	ioctl(fd, UI_SET_EVBIT, EV_SYN);
+	for (i = 0; i < 256; i++) {
+		ioctl(fd, UI_SET_KEYBIT, i);
+	}
+
+	ioctl(fd, UI_SET_EVBIT, EV_ABS);
+
+	ioctl(fd, UI_SET_KEYBIT, BTN_TOUCH);
+
+	ioctl(fd, UI_SET_ABSBIT, ABS_X);
+	ioctl(fd, UI_SET_ABSBIT, ABS_Y);
+	ioctl(fd, UI_SET_ABSBIT, ABS_Z);
+	ioctl(fd, UI_SET_ABSBIT, ABS_PRESSURE);
+	ioctl(fd, UI_SET_ABSBIT, ABS_TOOL_WIDTH);
+
+	uidev.absmin[ABS_X] = 0;
+	uidev.absmax[ABS_X] = 800;
+	uidev.absmin[ABS_Y] = 0;
+	uidev.absmax[ABS_Y] = 1300;
+	uidev.absmin[ABS_Z] = 0;
+	uidev.absmax[ABS_Z] = 999;
+	uidev.absmin[ABS_PRESSURE] = 0;
+	uidev.absmax[ABS_PRESSURE] = 0xFFFF;
+	/* Create input device into input sub-system */
+	write(fd, &uidev, sizeof(struct uinput_user_dev));
+	if (ioctl(fd, UI_DEV_CREATE) < 0) {
+		printf("error: create uinput device\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static void send_event(int fd, uint16_t type, uint16_t code, int32_t value, int32_t time_delay) {
+	struct input_event event;
+	int err;
+
+	memset(&event, 0, sizeof(struct input_event));
+
+	gettimeofday(&event.time, NULL);
+	if (time_delay > 0) {
+		event.time.tv_usec += time_delay;
+	}
+
+	event.type = type;
+	event.code = code;
+	event.value = value;
+
+	if (write(fd, &event, sizeof(struct input_event)) < 0) {
+		printf("event sent error: %s\n", strerror(errno));
+	}
+}
+
+void send_key_event(int fd, uint16_t key, int press) {
+	printf("send key fd = %d, 0x%04x press: %s\n", fd, key, press ? "true" : "false");
+	send_event(fd, EV_KEY, key, press ? 1 : 0, 0);
+	send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+}
+
+void send_touch_event(int fd, int32_t X, int32_t Y) {
+	printf("send click fd = %d, X=%04X Y=%04X\n", fd, X, Y);
+
+
+		send_event(fd, EV_REL, REL_X, X, 0);
+		send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+
+		send_event(fd, EV_REL, REL_Y, Y, 0);
+		send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+
+		send_event(fd, EV_KEY, BTN_TOUCH, 1, 0);
+//		send_event(fd, EV_REL, REL_PRESSURE, 1, 0);
+//		send_event(fd, EV_REL, REL_TOOL_WIDTH, 5, 0);
+		send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+
+//		send_event(fd, EV_REL, ABS_PRESSURE, 0, 0);
+		send_event(fd, EV_KEY, BTN_TOUCH, 0, 0);
+		send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+
+//	send_event(fd, EV_ABS, ABS_X, X, 0);
+//	send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+//
+//	send_event(fd, EV_ABS, ABS_Y, Y, 0);
+//	send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+//
+//	send_event(fd, EV_KEY, BTN_TOUCH, 1, 0);
+//	send_event(fd, EV_ABS, ABS_PRESSURE, 1, 0);
+//	send_event(fd, EV_ABS, ABS_TOOL_WIDTH, 5, 0);
+//	send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+//
+//	send_event(fd, EV_ABS, ABS_PRESSURE, 0, 0);
+//	send_event(fd, EV_KEY, BTN_TOUCH, 0, 0);
+//	send_event(fd, EV_SYN, SYN_REPORT, 0, 0);
+}
+
+void close_fd_dev(int fd) {
+	if (ioctl(fd, UI_DEV_DESTROY) < 0) {
+		printf("error: ioctl");
+	}
+}
+
+int main(int argc, char *argv[]) {
+	int fd = -1;
+	int key;
+	int i;
+
+	fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
+	if (fd < 0) {
+		printf("error: open /dev/uinput\n");
+		return -1;
+	}
+
+	setup_uinput_device(fd);
+
+	usleep(500 * 1000);
+
+	int x, y;
+
+	while(1){
+		scanf("%d %d",&x,&y);
+		send_touch_event(fd, x, y);
+	}
+
+//
+//	int k = 0;
+//	while (k < 100) {
+//		send_touch_event(fd, k, k);
+//		k++;
+//		usleep(100 * 1000);
+//	}
+
+//	sleep(100);
+
+	usleep(500 * 1000);
+	close_fd_dev(fd);
+
+	close(fd);
+	fd = -1;
+
+	return 0;
+}
+

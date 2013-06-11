@@ -1,0 +1,15 @@
+ncurses:
+./configure --host=arm-linux  --prefix=/sourcecode/arm-workspace/gdb-test/out --without-ada --enable-termcap --with-shared
+
+
+gdb:
+
+./configure --host=arm-linux --enable-shared \
+--prefix=/sourcecode/arm-workspace/gdb-test/out \
+--without-x --disable-gdbtk --disable-tui --without-included-regex --without-included-gettext \
+CPPFLAGS="-I/sourcecode/arm-workspace/gdb-test/out/include" \
+LDFLAGS="-L/sourcecode/arm-workspace/gdb-test/out/lib"
+
+最终的arm的程序gdb应该在bin下面，将其拷贝和libncurses.so拷贝到开发板上即可运行，象x86的GDB一样运行即可
+
+刚刚编译出来的gdb尺寸相当大,10M多,因此必须要用arm-linux-strip gdb 来把尺寸减少.strip后大约2M多.

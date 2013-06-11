@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/">
+  <interface name="org.zekezang.Test.Basic">
+    <method name="Add">
+       <arg name="arg0" type="i"/>
+       <arg name="arg1" type="i"/>
+       <arg name="ret" type="i" direction="out"/>
+    </method>
+    <method name="Add1">
+       <arg name="arg0" type="i"/>
+       <arg name="arg1" type="i"/>
+       <arg name="ret" type="i" direction="out"/>
+    </method>
+  </interface>
+</node>

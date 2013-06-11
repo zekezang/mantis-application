@@ -1,0 +1,425 @@
+// Report BUTTON CLICK - PRESS event
+memset(&event, 0, sizeof(event));
+gettimeofday(&event.time, NULL);
+event.type = EV_KEY;
+event.code = BTN_LEFT;
+event.value = 1;
+write(uinp_fd, &event, sizeof(event));
+event.type = EV_SYN;
+event.code = SYN_REPORT;
+event.value = 0;
+write(uinp_fd, &event, sizeof(event));
+// Report BUTTON CLICK - RELEASE event
+memset(&event, 0, sizeof(event));
+gettimeofday(&event.time, NULL);
+event.type = EV_KEY;
+event.code = BTN_LEFT;
+event.value = 0;
+write(uinp_fd, &event, sizeof(event));
+event.type = EV_SYN;
+event.code = SYN_REPORT;
+event.value = 0;
+write(uinp_fd, &event, sizeof(event));
+
+
+
+void touch(int fd, int x, int y)
+{
+	// touch on one point
+	struct input_event ev;
+	memset(&ev, 0, sizeof(ev));
+
+	ev.type = EV_ABS;
+	ev.code = ABS_MT_POSITION_X;
+	ev.value = x;
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_ABS;
+	ev.code = ABS_MT_POSITION_Y;
+	ev.value = y;
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_ABS;
+	ev.code = ABS_MT_PRESSURE;
+	ev.value = 53;
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_ABS;
+	ev.code = ABS_MT_TOUCH_MAJOR;
+	ev.value = 4;
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_ABS;
+	ev.code = ABS_MT_TRACKING_ID;
+	ev.value = 0;
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_SYN;
+	ev.code = SYN_MT_REPORT;
+	ev.value = 0;
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_SYN;
+	ev.code = SYN_REPORT;
+	ev.value = 0;
+	write(fd, &ev, sizeof(struct input_event));
+	return;
+}
+
+void syn(int fd)
+{
+	// leave touch pad
+	struct input_event ev;
+	memset(&ev, 0, sizeof(ev));
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_SYN;
+	ev.code = SYN_MT_REPORT;
+	ev.value = 0;
+	write(fd, &ev, sizeof(struct input_event));
+	ev.type = EV_SYN;
+	ev.code = SYN_REPORT;
+	ev.value = 0;
+	write(fd, &ev, sizeof(struct input_event));
+	return;
+}
+
+int init_uinput()
+{
+	// init and creat uinput device
+	int fd;
+	struct uinput_user_dev uidev;
+
+	fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
+	if( fd  < 0 )
+	{
+		printf("open /dev/uinput error\n");
+		return 1;
+	}
+
+	ioctl(fd, UI_SET_EVBIT, EV_ABS);
+	ioctl(fd, UI_SET_EVBIT, EV_SYN);
+
+	ioctl(fd, UI_SET_ABSBIT, ABS_MT_POSITION_X);
+	ioctl(fd, UI_SET_ABSBIT, ABS_MT_POSITION_Y);
+	ioctl(fd, UI_SET_ABSBIT, ABS_MT_PRESSURE);
+	ioctl(fd, UI_SET_ABSBIT, ABS_MT_TOUCH_MAJOR);
+	ioctl(fd, UI_SET_ABSBIT, ABS_MT_TRACKING_ID);
+
+	snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "uinput");
+
+	uidev.id.bustype = BUS_VIRTUAL;
+	uidev.id.vendor = 0;
+	uidev.id.product = 0;
+	uidev.id.version = 0;
+	uidev.absmin[ABS_MT_POSITION_X] = 0;
+	uidev.absmax[ABS_MT_POSITION_X] = 1024;
+	uidev.absmin[ABS_MT_POSITION_Y] = 0;
+	uidev.absmax[ABS_MT_POSITION_Y] = 1024;
+	uidev.absflat[ABS_MT_POSITION_X] = 0;
+	uidev.absflat[ABS_MT_POSITION_Y] = 0;
+	uidev.absfuzz[ABS_MT_POSITION_X] = 0;
+	uidev.absfuzz[ABS_MT_POSITION_Y] = 0;
+
+	write(fd, &uidev, sizeof(uidev));
+
+	// creat uinput device
+	ioctl(fd, UI_DEV_CREATE);
+
+	return fd;
+}
+
+void close_uinput(int fd)
+{
+	ioctl(fd, UI_DEV_DESTROY);
+	return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * main.c
+ *
+ *  Created on: 2013-5-6
+ *      Author: zekezang
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include "input.h"
+#include "uinput.h"
+
+/* Setup the uinput device */
+int setup_uinput_device(int fd) {
+	struct uinput_user_dev uidev; // uInput device structure
+	int i = 0;
+
+	memset(&uidev, 0, sizeof(struct uinput_user_dev)); // Intialize the uInput device to NULL
+	snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "zekezang-keyboard");
+	uidev.id.bustype = BUS_USB;
+	uidev.id.vendor = 0x1111;
+	uidev.id.product = 0x1111;
+	uidev.id.version = 1;
+	// Setup the driver I/O channels
+	ioctl(fd, UI_SET_EVBIT, EV_KEY);
+	for (i = 0; i < 256; i++) {
+		ioctl(fd, UI_SET_KEYBIT, i);
+	}
+	ioctl(fd, UI_SET_KEYBIT, BTN_MOUSE);
+	ioctl(fd, UI_SET_KEYBIT, BTN_TOUCH);
+	ioctl(fd, UI_SET_KEYBIT, BTN_LEFT);
+	ioctl(fd, UI_SET_KEYBIT, BTN_MIDDLE);
+	ioctl(fd, UI_SET_KEYBIT, BTN_RIGHT);
+	ioctl(fd, UI_SET_KEYBIT, BTN_FORWARD);
+	ioctl(fd, UI_SET_KEYBIT, BTN_BACK);
+
+	ioctl(fd, UI_SET_EVBIT, EV_REL);
+	ioctl(fd, UI_SET_RELBIT, REL_X);
+	ioctl(fd, UI_SET_RELBIT, REL_Y);
+
+
+	ioctl(fd, UI_SET_EVBIT, EV_ABS);
+	ioctl(fd, UI_SET_ABSBIT, ABS_X);
+	ioctl(fd, UI_SET_ABSBIT, ABS_Y);
+	ioctl(fd, UI_SET_ABSBIT, ABS_PRESSURE);
+
+
+	uidev.absmin[ABS_X] = 0;
+	uidev.absmax[ABS_X] = 800;
+	uidev.absmin[ABS_Y] = 0;
+	uidev.absmax[ABS_Y] = 1300;
+	uidev.absmin[ABS_PRESSURE] = 0;
+	uidev.absmax[ABS_PRESSURE] = 0xfff;
+
+	/* Create input device into input sub-system */
+	write(fd, &uidev, sizeof(struct uinput_user_dev));
+	if (ioctl(fd, UI_DEV_CREATE) < 0) {
+		printf("error: create uinput device\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static void send_event(int fd, uint16_t type, uint16_t code, int32_t value) {
+	struct input_event event;
+	int err;
+
+	memset(&event, 0, sizeof(event));
+
+	event.type = type;
+	event.code = code;
+	event.value = value;
+	gettimeofday(&event.time, NULL);
+	if (write(fd, &event, sizeof(event)) < 0) {
+		printf("event sent error: %s\n", strerror(errno));
+	}
+}
+
+void send_key_event(int fd, uint16_t key, int press) {
+	printf("send key fd = %d, 0x%04x press: %s\n", fd, key, press ? "true" : "false");
+	send_event(fd, EV_KEY, key, press ? 1 : 0);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+}
+
+void send_click_event(int fd, int32_t X, int32_t Y) {
+	printf("send click fd = %d, X=%d Y=%d\n", fd, X, Y);
+
+	send_event(fd, EV_ABS, ABS_X, X);
+	send_event(fd, EV_ABS, ABS_Y, Y);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+
+	send_event(fd, EV_KEY, BTN_LEFT, 1);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+
+	send_event(fd, EV_KEY, BTN_LEFT, 0);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+
+}
+
+int main(int argc, char *argv[]) {
+	int fd = -1;
+	int key;
+	int i;
+
+	fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK); // Open the input device
+	if (fd < 0) {
+		printf("error: open /dev/uinput\n");
+		return -1;
+	}
+
+	setup_uinput_device(fd);
+
+	int x = atoi(argv[1]);
+	int y = atoi(argv[2]);
+
+	int k = 0;
+//	while(k<1000){
+		send_click_event(fd, x, y);
+//		k++;
+//		usleep(100*1000);
+//	}
+
+	sleep(5);
+
+
+	if (ioctl(fd, UI_DEV_DESTROY) < 0) {
+		printf("error: ioctl");
+		return -1;
+	}
+
+	close(fd);
+	fd = -1;
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * main.c
+ *
+ *  Created on: 2013-5-6
+ *      Author: zekezang
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include "input.h"
+#include "uinput.h"
+
+/* Setup the uinput device */
+int setup_uinput_device(int fd) {
+	struct uinput_user_dev uidev; // uInput device structure
+	int i = 0;
+
+	memset(&uidev, 0, sizeof(struct uinput_user_dev)); // Intialize the uInput device to NULL
+	snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "uinput-keyboard");
+	uidev.id.bustype = BUS_USB;
+	uidev.id.vendor = 0x1;
+	uidev.id.product = 0x1;
+	uidev.id.version = 1;
+	// Setup the driver I/O channels
+	ioctl(fd, UI_SET_EVBIT, EV_KEY);
+	for (i = 0; i < 256; i++) {
+		ioctl(fd, UI_SET_KEYBIT, i);
+	}
+	ioctl(fd, UI_SET_KEYBIT, BTN_MOUSE);
+	ioctl(fd, UI_SET_KEYBIT, BTN_TOUCH);
+	ioctl(fd, UI_SET_KEYBIT, BTN_LEFT);
+	ioctl(fd, UI_SET_KEYBIT, BTN_MIDDLE);
+	ioctl(fd, UI_SET_KEYBIT, BTN_RIGHT);
+	ioctl(fd, UI_SET_KEYBIT, BTN_FORWARD);
+	ioctl(fd, UI_SET_KEYBIT, BTN_BACK);
+
+	ioctl(fd, UI_SET_EVBIT, EV_REL);
+	ioctl(fd, UI_SET_RELBIT, REL_X);
+	ioctl(fd, UI_SET_RELBIT, REL_Y);
+
+
+	ioctl(fd, UI_SET_EVBIT, EV_ABS);
+	ioctl(fd, UI_SET_ABSBIT, ABS_X);
+	ioctl(fd, UI_SET_ABSBIT, ABS_Y);
+
+	/* Create input device into input sub-system */
+	write(fd, &uidev, sizeof(struct uinput_user_dev));
+	if (ioctl(fd, UI_DEV_CREATE) < 0) {
+		printf("error: create uinput device\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static void send_event(int fd, uint16_t type, uint16_t code, int32_t value) {
+	struct input_event event;
+	int err;
+
+	memset(&event, 0, sizeof(event));
+
+	event.type = type;
+	event.code = code;
+	event.value = value;
+	gettimeofday(&event.time, NULL);
+	if (write(fd, &event, sizeof(event)) < 0) {
+		printf("event sent error: %s\n", strerror(errno));
+	}
+}
+
+void send_key_event(int fd, uint16_t key, int press) {
+	printf("send key fd = %d, 0x%04x press: %s\n", fd, key, press ? "true" : "false");
+	send_event(fd, EV_KEY, key, press ? 1 : 0);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+}
+
+void send_click_event(int fd, int32_t X, int32_t Y) {
+	printf("send click fd = %d, X=%d Y=%d\n", fd, X, Y);
+
+	send_event(fd, EV_ABS, ABS_X, X);
+	send_event(fd, EV_ABS, ABS_Y, Y);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+
+	send_event(fd, EV_KEY, BTN_LEFT, 1);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+
+	send_event(fd, EV_KEY, BTN_LEFT, 0);
+	send_event(fd, EV_SYN, SYN_REPORT, 0);
+
+}
+
+int main(int argc, char *argv[]) {
+	int fd = -1;
+	int key;
+	int i;
+
+	fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK); // Open the input device
+	if (fd < 0) {
+		printf("error: open /dev/uinput\n");
+		return -1;
+	}
+
+	setup_uinput_device(fd);
+
+	int x = atoi(argv[1]);
+	int y = atoi(argv[2]);
+
+	int k = 0;
+	while(k<1000){
+		send_click_event(fd, x, y);
+		k++;
+		msleep(100);
+	}
+
+
+	if (ioctl(fd, UI_DEV_DESTROY) < 0) {
+		printf("error: ioctl");
+		return -1;
+	}
+
+	close(fd);
+	fd = -1;
+
+	return 0;
+}
+
+
+

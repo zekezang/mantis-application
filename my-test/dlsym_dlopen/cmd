@@ -1,0 +1,5 @@
+gcc -shared -fPIC -o test_so.so test_so.c
+
+gcc -o a main.c -ldl
+
+

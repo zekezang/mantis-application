@@ -1,0 +1,1 @@
+cmd_/sourcecode/arm-workspace/my-test/createFileInKernel/testf.ko := arm-linux-ld -EL -r  -T /sourcecode/linux-2.6.38-used/scripts/module-common.lds --build-id  -o /sourcecode/arm-workspace/my-test/createFileInKernel/testf.ko /sourcecode/arm-workspace/my-test/createFileInKernel/testf.o /sourcecode/arm-workspace/my-test/createFileInKernel/testf.mod.o

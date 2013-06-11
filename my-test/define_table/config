@@ -1,0 +1,96 @@
+/**
+packages/amlogic/LibPlayer/amcodec/include/amports/vformat.h
+
+typedef enum {
+    VIDEO_DEC_FORMAT_UNKNOW,
+    VIDEO_DEC_FORMAT_MPEG4_3,
+    VIDEO_DEC_FORMAT_MPEG4_4,
+    VIDEO_DEC_FORMAT_MPEG4_5,
+    VIDEO_DEC_FORMAT_H264,
+    VIDEO_DEC_FORMAT_MJPEG,
+    VIDEO_DEC_FORMAT_MP4,
+    VIDEO_DEC_FORMAT_H263,
+    VIDEO_DEC_FORMAT_REAL_8,
+    VIDEO_DEC_FORMAT_REAL_9,
+    VIDEO_DEC_FORMAT_WMV3,
+    VIDEO_DEC_FORMAT_WVC1,
+    VIDEO_DEC_FORMAT_SW,
+    VIDEO_DEC_FORMAT_MAX
+} vdec_type_t;
+
+packages/amlogic/LibPlayer/amcodec/include/amports/aformat.h
+typedef enum {
+    AFORMAT_UNKNOWN = -1,
+    AFORMAT_MPEG   = 0,
+    AFORMAT_PCM_S16LE = 1,
+    AFORMAT_AAC   = 2,
+    AFORMAT_AC3   = 3,
+    AFORMAT_ALAW = 4,
+    AFORMAT_MULAW = 5,
+    AFORMAT_DTS = 6,
+    AFORMAT_PCM_S16BE = 7,
+    AFORMAT_FLAC = 8,
+    AFORMAT_COOK = 9,
+    AFORMAT_PCM_U8 = 10,
+    AFORMAT_ADPCM = 11,
+    AFORMAT_AMR  = 12,
+    AFORMAT_RAAC  = 13,
+    AFORMAT_WMA  = 14,
+    AFORMAT_WMAPRO   = 15,
+    AFORMAT_PCM_BLURAY  = 16,
+    AFORMAT_ALAC  = 17,
+    AFORMAT_VORBIS    = 18,
+    AFORMAT_AAC_LATM   = 19,
+    AFORMAT_APE   = 20,
+    AFORMAT_UNSUPPORT ,
+    AFORMAT_MAX    
+
+} aformat_t;
+*/
+
+/*********************************
+define_media_support(a, b, c)
+a:vedio or audio type desc
+b:enum value
+c: 0->not support; 1->support
+***********************************/
+
+#ifdef define_vedio_support
+define_vedio_support(VIDEO_DEC_FORMAT_MPEG4_3, 1, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_MPEG4_4, 2, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_MPEG4_5, 3, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_H264, 4, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_MJPEG, 5, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_MP4, 6, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_H263, 7, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_REAL_8, 8, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_REAL_9, 9, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_WMV3, 10, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_WVC1, 11, 1)
+define_vedio_support(VIDEO_DEC_FORMAT_SW, 12, 1)
+#endif
+
+
+#ifdef define_audio_support
+define_audio_support(AFORMAT_MPEG, 0, 1)
+define_audio_support(AFORMAT_PCM_S16LE, 1, 1)
+define_audio_support(AFORMAT_AAC, 2, 1)
+define_audio_support(AFORMAT_AC3, 3, 1)
+define_audio_support(AFORMAT_ALAW, 4, 1)
+define_audio_support(AFORMAT_MULAW, 5, 1)
+define_audio_support(AFORMAT_DTS, 6, 1)
+define_audio_support(AFORMAT_PCM_S16BE, 7, 1)
+define_audio_support(AFORMAT_FLAC, 8, 1)
+define_audio_support(AFORMAT_COOK, 9, 1)
+define_audio_support(AFORMAT_PCM_U8, 10, 1)
+define_audio_support(AFORMAT_ADPCM, 11, 1)
+define_audio_support(AFORMAT_AMR, 12, 1)
+define_audio_support(AFORMAT_RAAC, 13, 1)
+define_audio_support(AFORMAT_WMA, 14, 1)
+define_audio_support(AFORMAT_WMAPRO, 15, 1)
+define_audio_support(AFORMAT_PCM_BLURAY, 16, 1)
+define_audio_support(AFORMAT_ALAC, 17, 1)
+define_audio_support(AFORMAT_VORBIS, 18, 1)
+define_audio_support(AFORMAT_AAC_LATM, 19, 1)
+define_audio_support(AFORMAT_APE, 20, 1)
+#endif

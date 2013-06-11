@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_MPEG4_3" value="1" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_MPEG4_4" value="2" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_MPEG4_5" value="3" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_H264" value="4" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_MJPEG" value="5" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_MP4" value="6" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_H263" value="7" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_REAL_8" value="8" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_REAL_9" value="9" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_WMV3" value="10" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_WVC1" value="11" support="1"/>
+	<item tag="vedio" type="VIDEO_DEC_FORMAT_SW" value="12" support="1"/>
+	
+	<item tag="audio" type="AFORMAT_MPEG" value="0" support="1"/>
+	<item tag="audio" type="AFORMAT_PCM_S16LE" value="1" support="1"/>
+	<item tag="audio" type="AFORMAT_AAC" value="2" support="1"/>
+	<item tag="audio" type="AFORMAT_AC3" value="3" support="1"/>
+	<item tag="audio" type="AFORMAT_ALAW" value="4" support="1"/>
+	<item tag="audio" type="AFORMAT_MULAW" value="5" support="1"/>
+	<item tag="audio" type="AFORMAT_DTS" value="6" support="1"/>
+	<item tag="audio" type="AFORMAT_PCM_S16BE" value="7" support="1"/>
+	<item tag="audio" type="AFORMAT_FLAC" value="8" support="1"/>
+	<item tag="audio" type="AFORMAT_COOK" value="9" support="1"/>
+	<item tag="audio" type="AFORMAT_PCM_U8" value="10" support="1"/>
+	<item tag="audio" type="AFORMAT_ADPCM" value="11" support="1"/>
+	<item tag="audio" type="AFORMAT_AMR" value="12" support="1"/>
+	<item tag="audio" type="AFORMAT_RAAC" value="13" support="1"/>
+	<item tag="audio" type="AFORMAT_WMA" value="14" support="1"/>
+	<item tag="audio" type="AFORMAT_WMAPRO" value="15" support="1"/>
+	<item tag="audio" type="AFORMAT_PCM_BLURAY" value="16" support="1"/>
+	<item tag="audio" type="AFORMAT_ALAC" value="17" support="1"/>
+	<item tag="audio" type="AFORMAT_VORBIS" value="18" support="1"/>
+	<item tag="audio" type="AFORMAT_AAC_LATM" value="19" support="1"/>
+	<item tag="audio" type="AFORMAT_APE" value="20" support="1"/>
+</root>

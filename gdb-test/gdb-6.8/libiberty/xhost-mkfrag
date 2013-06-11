@@ -1,0 +1,4 @@
+# Warning: this fragment is automatically generated
+# Following fragment copied from .././libiberty/../config/mh-armpic
+PICFLAG=-fPIC
+enable_shared = yes

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/!svn/ver/3/trunk/Test_C/ipc1
+END
+test_fork.c
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/3/trunk/Test_C/ipc1/test_fork.c
+END
+test_share_mem1.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/3/trunk/Test_C/ipc1/test_share_mem1.c
+END
+test_fifo.c
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/3/trunk/Test_C/ipc1/test_fifo.c
+END
+test_pipe.c
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/3/trunk/Test_C/ipc1/test_pipe.c
+END
